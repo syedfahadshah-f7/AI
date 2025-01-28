@@ -1,45 +1,56 @@
+import random
+
 class Environment:
-    
-    def __init__(self,vulner):
+    def __init__(self, vulner):
         self.vulner = vulner
-    
+
     def display(self):
-        print(f"Vulnerabilities : {self.vulner}")
-        
+        print("System State:")
+        for i, state in enumerate(self.vulner):
+            print(f"Component {chr(65 + i)}: {state}")
+        print()
+
     def get_vulnerability(self, i):
         return self.vulner[i]
-    
+
 
 class SecurityAgent:
     def __init__(self):
         self.patching = []
-    
+
     def Scan(self, env):
-        size = len(env.vulner)
-        for i in range(0,size):
-            if env.vulner[i] == "Safe":
-                print("Logged \n")
+        for i, state in enumerate(env.vulner):
+            if state == "Safe":
+                print(f"Component {chr(65 + i)} is Safe. Logging success.")
             else:
-                print("Warning \n")
+                print(f"Component {chr(65 + i)} has vulnerabilities. Logging warning.")
                 self.patching.append(i)
-    
+
     def PatchingVulnerabilities(self, env):
-        
-        psize = len(self.patching)
-        
-        for i in range(psize):
-           if env.vulner[self.patching[i]] == "Low Risk Vulnerable":
-               env.vulner[self.patching[i]] = "Safe"
-           else:
-               print("need for premium service to patch them.\n")
-               
-               
+        for i in self.patching:
+            if env.vulner[i] == "Low Risk Vulnerable":
+                env.vulner[i] = "Safe"
+                print(f"Patched Low Risk Vulnerability in Component {chr(65 + i)}.")
+            elif env.vulner[i] == "High Risk Vulnerable":
+                print(f"Component {chr(65 + i)} requires premium service to patch High Risk Vulnerabilities.")
+
+
+def random_vulnerabilities():
+    states = ["Safe", "Low Risk Vulnerable", "High Risk Vulnerable"]
+    return [random.choice(states) for _ in range(9)]
+
+
 def Run_Agent(agent, env):
+    print("Initial System State:")
     env.display()
+    print("Starting System Scan...")
     agent.Scan(env)
+    print("\nPatching Vulnerabilities...")
     agent.PatchingVulnerabilities(env)
+    print("\nFinal System State:")
     env.display()
-    
-env = Environment(["Safe", "Low Risk Vulnerable","High Risk Vulnerable","Low Risk Vulnerable","Low Risk Vulnerable","High Risk Vulnerable","Safe"])
+
+
+env = Environment(random_vulnerabilities())
 agent = SecurityAgent()
-Run_Agent(agent,env)
+Run_Agent(agent, env)
